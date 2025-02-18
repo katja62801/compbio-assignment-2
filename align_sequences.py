@@ -43,9 +43,69 @@ def read_single_contig_fasta(filename):
     return names[0], sequences[0]
 
 def smith_waterman(seq1, seq2, match, mismatch, gapopen, gapextend):
+
+    import numpy as np
+
+    #create matrix full of zeros to start
+    m = len(seq1)
+    n = len(seq2)
+    matrix = numpy.zeros(m+1,n+1)
+    positionmatrix = numpy.zeros(m+1,n+1)
     max_score = 0
+    maxposition = (i,j)
+
+    for i in range (2, m+1):
+        for j in range (2, n+1):
+        
+            if seq1[i-1] == seq2[j-1]:
+                diagonalscore = matrix[i-1,j-1] + match
+            else:
+                diagonalscore = matrix[i-1, j-1] - mismatch
+        
+            if seq1opengap = true:
+                seq1gapscore = matrix[i-1, j] - gapextend
+            else: 
+                seq1gapscore = matrix[i-1, j] - gapopen
+        
+            if seq2opengap = true: 
+                seq2gapscore = matrix[i, j-1] - gapextend
+            else: 
+                seq2gapscore = matrix[i, j-1] - gapopen
+        
+            matrix[i,j] = max(diagonalscore, seq1gapscore, seq2gapscore)
+            if matrix[i,j] > maxscore:
+                max_score = matrix[i,j]
+                maxposition = (i,j)
+
+            if matrix[i,j] = seq1gapscore:
+                seq1opengap = true
+                positionmatrix[i,j] = 1 #1 means there is a gap in seq1
+            elif matrix[i,j] = seq2gapscore:
+                seq2opengap = true
+                positionmatrix[i,j] = 2 #2 means there is a gap in seq2
+            else:
+                positionmatrix[i,j] = 4 #4 means there is no gap
+    
     alnseq1 = ""
     alnseq2 = ""
+
+    i, j = maxposition
+    while i > 0 and j > 0 and matrix[i, j] > 0:
+        if positionmatrix[i,j] = 4:
+            alnseq1 = seq1[i-1] + alnseq1
+            alnseq2 = seq2[j-1] + alnseq2
+            i = i-1
+            j = j-1
+        elif positionmatrix[i,j] = 2:
+            alnseq1 = seq1[i-1] + alnseq1
+            alnseq2 = "-"
+            i = i-1
+        elif positionmatrix[i,j] = 1:
+            alnseq1 = "-" + alnseq1
+            alnseq2 = seq2[j-1] + alnseq2
+            j = j-1
+            
+    
 
 
     return max_score, alnseq1, alnseq2
